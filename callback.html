@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Conectar TikTok</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <header>
+    <a href="./"><div class="brand">Estilo de Hombre</div><div class="handle">@spacefortheboyz</div></a>
+  </header>
+
+  <div id="ok" hidden>
+    <h1>Cuenta autorizada</h1>
+    <p>Copia esta dirección y pégala en la terminal, donde la pide <code>python -m tiktokbot auth</code>.</p>
+    <div class="card">
+      <span class="url" id="url"></span>
+      <button id="copy" type="button">Copiar</button>
+    </div>
+    <p class="muted">Esta página no envía nada a ningún sitio: la dirección solo está en tu navegador.</p>
+  </div>
+
+  <div id="error" hidden>
+    <h1>No se pudo autorizar</h1>
+    <p id="error-text"></p>
+    <p>Vuelve a ejecutar <code>python -m tiktokbot auth</code> e inténtalo de nuevo.</p>
+  </div>
+
+  <div id="empty" hidden>
+    <h1>Página de retorno</h1>
+    <p>Aquí vuelve TikTok después de autorizar la aplicación. Si llegaste directamente, no hay nada que hacer.</p>
+  </div>
+</main>
+<script>
+  const params = new URLSearchParams(location.search);
+  const show = (id) => { document.getElementById(id).hidden = false; };
+  if (params.get("code")) {
+    document.getElementById("url").textContent = location.href;
+    show("ok");
+    const btn = document.getElementById("copy");
+    btn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(location.href);
+        btn.textContent = "Copiado";
+      } catch {
+        btn.textContent = "Selecciónala y copia a mano";
+      }
+    });
+  } else if (params.get("error")) {
+    document.getElementById("error-text").textContent =
+      params.get("error_description") || params.get("error");
+    show("error");
+  } else {
+    show("empty");
+  }
+</script>
+</body>
+</html>
